@@ -1,275 +1,305 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Search, UserCircle, Mail, Phone, Globe } from 'lucide-react';
+// import React, { useEffect, useState, useCallback } from 'react';
 
-// Custom hook to handle clicks outside of a component
-const useClickOutside = (ref, handler) => {
-  useEffect(() => {
-    const listener = (event) => {
-      if (!ref.current || ref.current.contains(event.target)) {
+// const App = () => {
+//   const [results, setResults] = useState([]);
+//   const [input, setInput] = useState("");
+//   const [showResults, setShowResults] = useState(false);
+//   const [cache, setCache] = useState({});
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [error, setError] = useState(null);
+
+//   const fetchData = useCallback(async () => {
+//     if (!input.trim()) {
+//       setResults([]);
+//       return;
+//     }
+
+//     if (cache[input]) {
+//       setResults(cache[input]);
+//       console.log("CACHE RETURNED", input);
+//       return;
+//     }
+
+//     setIsLoading(true);
+//     setError(null);
+//     console.log("API CALL", input);
+
+//     try {
+//       const data = await fetch(`https://dummyjson.com/recipes/search?q=${encodeURIComponent(input)}`);
+      
+//       if (!data.ok) {
+//         throw new Error(`HTTP error! Status: ${data.status}`);
+//       }
+      
+//       const json = await data.json();
+//       setResults(json?.recipes || []);
+//       setCache(prev => ({...prev, [input]: json?.recipes || []}));
+//     } catch (err) {
+//       console.error("Error fetching recipes:", err);
+//       setError("Failed to fetch recipes. Please try again.");
+//       setResults([]);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   }, [input, cache]);
+
+//   useEffect(() => {
+//     const timer = setTimeout(fetchData, 300);
+    
+//     return () => {
+//       clearTimeout(timer);
+//     };
+//   }, [fetchData]);
+
+//   const handleBlur = () => {
+//     // Small delay to allow clicks on results to register
+//     setTimeout(() => setShowResults(false), 200);
+//   };
+
+//   return (
+//     <div className="App">
+//       <h1>Autocomplete Search Bar</h1>
+//       <div>
+//         <input
+//           type="text"
+//           className="search-input"
+//           value={input}
+//           onChange={(e) => setInput(e.target.value)}
+//           onFocus={() => setShowResults(true)}
+//           onBlur={handleBlur}
+//           placeholder="Search for recipes..."
+//         />
+//       </div>
+
+//       {showResults && (
+//         <div className="results-container">
+//           {isLoading && <div className="loading">Loading...</div>}
+//           {error && <div className="error">{error}</div>}
+//           {!isLoading && !error && results.length === 0 && input.trim() !== "" && (
+//             <div className="no-results">No recipes found</div>
+//           )}
+//           {results.map((r) => (
+//             <div 
+//               className="results"
+//               key={r.id}
+//               onClick={() => {
+//                 setInput(r.name);
+//                 setShowResults(false);
+//               }}
+//             >
+//               {r.name}
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default App;
+
+
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { Search, X, Loader2 } from 'lucide-react';
+
+export default function AutocompleteSearchBar() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [cache, setCache] = useState({});
+  const inputRef = useRef(null);
+  const resultsRef = useRef(null);
+
+  // Debounced search function
+  const fetchResults = useCallback(
+    async (searchTerm) => {
+      if (!searchTerm.trim()) {
+        setResults([]);
         return;
       }
-      
-      handler(event);
-    };
 
-    document.addEventListener('mousedown', listener);
-    document.addEventListener('touchstart', listener);
+      // Check cache first
+      if (cache[searchTerm]) {
+        setResults(cache[searchTerm]);
+        return;
+      }
 
-    return () => {
-      document.removeEventListener('mousedown', listener);
-      document.removeEventListener('touchstart', listener);
-    };
-  }, [ref, handler]);
-};
+      setIsLoading(true);
+      setError(null);
 
-// Comprehensive API service for users
-const fetchUserDetails = async (query) => {
-  if (!query) return [];
+      try {
+        const response = await fetch(
+          `https://dummyjson.com/recipes/search?q=${encodeURIComponent(searchTerm)}`
+        );
 
-  try {
-    // Fetch users matching the query
-    const usersResponse = await fetch(`https://jsonplaceholder.typicode.com/users?username_like=${query}`);
-    const users = await usersResponse.json();
-    
-    // Fetch additional details for matched users
-    const detailedUsers = await Promise.all(
-      users.map(async (user) => {
-        // Fetch posts for the user
-        const postsResponse = await fetch(`https://jsonplaceholder.typicode.com/posts?userId=${user.id}`);
-        const posts = await postsResponse.json();
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const recipes = data?.recipes || [];
         
-        // Fetch albums for the user
-        const albumsResponse = await fetch(`https://jsonplaceholder.typicode.com/albums?userId=${user.id}`);
-        const albums = await albumsResponse.json();
-        
-        return {
-          ...user,
-          posts: posts.length,
-          albums: albums.length,
-          company: user.company,
-          address: user.address
-        };
-      })
-    );
-    
-    return detailedUsers;
-  } catch (error) {
-    console.error('Error fetching suggestions:', error);
-    return [];
-  }
-};
-
-const AutocompleteSearchbar = () => {
-  const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
-  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
-  
-  // Refs
-  const searchContainerRef = useRef(null);
-  const inputRef = useRef(null);
-  
-  // Cache to store previous search results
-  const [suggestionCache, setSuggestionCache] = useState({});
-
-  // Use click outside hook
-  useClickOutside(searchContainerRef, () => {
-    setSuggestions([]);
-    setIsFocused(false);
-  });
-
-  // Debounced fetch with caching
-  const debouncedFetchSuggestions = useCallback(async (searchQuery) => {
-    const trimmedQuery = searchQuery.trim();
-    if (!trimmedQuery) {
-      setSuggestions([]);
-      return;
-    }
-
-    // Check cache first
-    if (suggestionCache[trimmedQuery]) {
-      setSuggestions(suggestionCache[trimmedQuery]);
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const result = await fetchUserDetails(trimmedQuery);
-      
-      setSuggestionCache(prevCache => ({
-        ...prevCache,
-        [trimmedQuery]: result
-      }));
-      
-      setSuggestions(result);
-    } catch (error) {
-      console.error('Error in suggestion fetch:', error);
-      setSuggestions([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [suggestionCache]);
+        // Update cache
+        setCache((prev) => ({ ...prev, [searchTerm]: recipes }));
+        setResults(recipes);
+      } catch (err) {
+        console.error('Search error:', err);
+        setError('Failed to load results. Please try again.');
+        setResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [cache]
+  );
 
   // Debounce effect
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (query) debouncedFetchSuggestions(query);
+    const timer = setTimeout(() => {
+      fetchResults(query);
     }, 300);
 
-    return () => clearTimeout(timeoutId);
-  }, [query, debouncedFetchSuggestions]);
+    return () => clearTimeout(timer);
+  }, [query, fetchResults]);
 
-  // Handle input change
-  const handleInputChange = (e) => {
-    setQuery(e.target.value);
-    setSelectedSuggestionIndex(-1);
-    setIsFocused(true);
-    setSelectedUser(null);
-  };
-
-  // Handle input focus
-  const handleInputFocus = () => {
-    setIsFocused(true);
-    if (query && suggestions.length === 0) {
-      debouncedFetchSuggestions(query);
-    }
-  };
-
-  // Handle suggestion selection
-  const handleSuggestionClick = (user) => {
-    setQuery(user.name);
-    setSuggestions([]);
-    setIsFocused(false);
-    setSelectedUser(user);
-  };
-
-  // Keyboard navigation for suggestions
-  const handleKeyDown = (e) => {
-    if (e.key === 'ArrowDown') {
-      setSelectedSuggestionIndex(prev => 
-        prev < suggestions.length - 1 ? prev + 1 : prev
-      );
-    } else if (e.key === 'ArrowUp') {
-      setSelectedSuggestionIndex(prev => 
-        prev > 0 ? prev - 1 : -1
-      );
-    } else if (e.key === 'Enter') {
-      if (selectedSuggestionIndex >= 0) {
-        const selectedSuggestion = suggestions[selectedSuggestionIndex];
-        setQuery(selectedSuggestion.name);
-        setSuggestions([]);
-        setIsFocused(false);
-        setSelectedUser(selectedSuggestion);
+  // Handle clicks outside the component
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        resultsRef.current && 
+        !resultsRef.current.contains(event.target) &&
+        !inputRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
       }
-    } else if (e.key === 'Escape') {
-      setSuggestions([]);
-      setIsFocused(false);
-      inputRef.current?.blur();
+    };
+    
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
+  // Keyboard navigation
+  const handleKeyDown = (e) => {
+    if (!isOpen) return;
+    
+    // Down arrow
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((prev) => 
+        prev < results.length - 1 ? prev + 1 : prev
+      );
     }
+    // Up arrow
+    else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+    }
+    // Enter key
+    else if (e.key === 'Enter' && selectedIndex >= 0) {
+      e.preventDefault();
+      if (results[selectedIndex]) {
+        setQuery(results[selectedIndex].name);
+        setIsOpen(false);
+        inputRef.current.blur ();
+      }
+    }
+    // Escape key
+    else if (e.key === 'Escape') {
+      setIsOpen(false);
+    }
+  };
+
+  // Select a result
+  const selectResult = (result) => {
+    setQuery(result.name);
+    setIsOpen(false);
+    inputRef.current.blur();
+  };
+
+  // Clear the input
+  const clearInput = () => {
+    setQuery('');
+    setResults([]);
+    setSelectedIndex(-1);
+    inputRef.current.focus();
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-md mx-auto space-y-4">
-      <div 
-        ref={searchContainerRef} 
-        className="relative w-full"
-      >
+    <div className="w-full max-w-md mx-auto">
+      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Recipe Search</h1>
+      
+      <div className="relative">
+        {/* Search Input */}
         <div className="relative">
-          <input 
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400" />
+          </div>
+          <input
             ref={inputRef}
             type="text"
             value={query}
-            onChange={handleInputChange}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setIsOpen(true)}
             onKeyDown={handleKeyDown}
-            onFocus={handleInputFocus}
-            placeholder="Search users..."
-            className="w-full p-2 pl-8 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Search for recipes..."
+            className="w-full p-4 pl-10 pr-12 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
           />
-          <Search 
-            className="absolute left-2 top-3 text-gray-400" 
-            size={20} 
-          />
-          {loading && (
-            <div className="absolute right-2 top-3 text-gray-400">
-              Loading...
-            </div>
+          {query && (
+            <button 
+              onClick={clearInput}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
           )}
         </div>
-        
-        {isFocused && suggestions.length > 0 && (
-          <ul className="absolute z-10 w-full bg-white border rounded-md mt-1 shadow-lg">
-            {suggestions.map((suggestion, index) => (
-              <li 
-                key={suggestion.id}
-                onClick={() => handleSuggestionClick(suggestion)}
-                className={`p-2 cursor-pointer hover:bg-gray-100 ${
-                  index === selectedSuggestionIndex ? 'bg-gray-100' : ''
-                }`}
-              >
-                <div className="font-semibold">{suggestion.name}</div>
-                <div className="text-sm text-gray-500">@{suggestion.username}</div>
-              </li>
-            ))}
-          </ul>
+
+        {/* Results Dropdown */}
+        {isOpen && (
+          <div 
+            ref={resultsRef}
+            className="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 max-h-60 overflow-y-auto"
+          >
+            {isLoading ? (
+              <div className="flex justify-center items-center p-4 text-gray-500">
+                <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                <span>Searching...</span>
+              </div>
+            ) : error ? (
+              <div className="p-4 text-red-500 text-center">{error}</div>
+            ) : results.length === 0 ? (
+              <div className="p-4 text-gray-500 text-center">
+                {query.trim() ? "No recipes found" : "Start typing to search"}
+              </div>
+            ) : (
+              <ul className="py-2">
+                {results.map((result, index) => (
+                  <li 
+                    key={result.id}
+                    onClick={() => selectResult(result)}
+                    onMouseEnter={() => setSelectedIndex(index)}
+                    className={`px-4 py-2 cursor-pointer flex items-center ${
+                      selectedIndex === index
+                        ? "bg-blue-50 text-blue-700"
+                        : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <div className="flex-1">
+                      <div className="font-medium">{result.name}</div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {result.tags?.slice(0, 3).join(", ")}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         )}
       </div>
-
-      {/* User Details Card */}
-      {selectedUser && (
-        <div className="w-full bg-white border rounded-lg shadow-md p-6">
-          <div className="flex items-center mb-4">
-            <UserCircle className="w-16 h-16 text-blue-500 mr-4" />
-            <div>
-              <h2 className="text-xl font-bold">{selectedUser.name}</h2>
-              <p className="text-gray-600">@{selectedUser.username}</p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h3 className="font-semibold mb-2">Contact Information</h3>
-              <div className="flex items-center mb-1">
-                <Mail className="w-4 h-4 mr-2 text-gray-500" />
-                <span>{selectedUser.email}</span>
-              </div>
-              <div className="flex items-center mb-1">
-                <Phone className="w-4 h-4 mr-2 text-gray-500" />
-                <span>{selectedUser.phone}</span>
-              </div>
-              <div className="flex items-center">
-                <Globe className="w-4 h-4 mr-2 text-gray-500" />
-                <span>{selectedUser.website}</span>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-2">Company Details</h3>
-              <p>{selectedUser.company.name}</p>
-              <p className="text-sm text-gray-600">{selectedUser.company.catchPhrase}</p>
-              <p className="text-sm text-gray-600">{selectedUser.company.bs}</p>
-            </div>
-          </div>
-          
-          <div className="mt-4 border-t pt-4">
-            <h3 className="font-semibold mb-2">Activity</h3>
-            <div className="flex justify-between">
-              <div>
-                <p className="text-gray-600">Posts</p>
-                <p className="font-bold">{selectedUser.posts}</p>
-              </div>
-              <div>
-                <p className="text-gray-600">Albums</p>
-                <p className="font-bold">{selectedUser.albums}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
-};
-
-export default AutocompleteSearchbar;
+}

@@ -31,3 +31,9 @@
     background-color: beige;
     cursor: pointer;
 }
+
+.container{
+    text-align: left;
+    padding-left: 20px;
+    max-width: 200px;
+}

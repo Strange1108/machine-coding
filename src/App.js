@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import TabForm from './TabForm'
+import TabForm from './TabForm/TabForm'
 
 const App = () => {
   return (

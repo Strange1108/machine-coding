@@ -19,12 +19,12 @@ const Profile = ({data, setData, errors}) => {
       <div>
         <label> Age: </label>
         <input type='number' value={age} onChange={(e) => handleDataChange(e, "age")}/>
-        {errors.name && <span className='error'>{errors.age}</span>}
+        {errors.age && <span className='error'>{errors.age}</span>}
       </div>
       <div>
         <label> Email: </label>
         <input type='email' value={email} onChange={(e) => handleDataChange(e, "email")}/>
-        {errors.name && <span className='error'>{errors.email}</span>}
+        {errors.email && <span className='error'>{errors.email}</span>}
       </div>
     </div>
   )

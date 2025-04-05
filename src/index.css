@@ -4,7 +4,6 @@
 
 .App{
     font-family: sans-serif;
-    text-align: center;
 }
 
 .search-input{
@@ -67,4 +66,8 @@
     color: red;
     display: block;
     font: small;
+}
+
+.parent{
+    padding-left: 20px;
 }

@@ -2,8 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-.App{
+/* .App{
     font-family: sans-serif;
+    text-align: center;
 }
 
 .search-input{
@@ -71,3 +72,62 @@
 .parent{
     padding-left: 20px;
 }
+
+.outer{
+    margin: 10px 0;
+    border: 1px solid black;
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+
+}
+
+.inner{
+    text-align: center;
+    background-color: green;
+    color: white;
+    padding: 1px;
+    text-align: right;
+    transition: 0.8s ease-in;
+}
+
+Grid Sequence
+
+body {
+    font-family: sans-serif;
+  }
+  
+  .wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .grid {
+    display: grid;
+    max-width: 300px;
+    width: 100%;
+    padding: 20px;
+    gap: 20px;
+    border: 1px solid #000;
+  }
+  
+  .cell {
+    background-color: transparent;
+    border: 1px solid #000;
+    height: 0;
+    padding-bottom: 100%;
+  }
+  .cell-activated {
+    background-color: green;
+  } */
+  
+
+html.dark {
+  background-color: #1a202c;
+  color: white;
+}
+
+

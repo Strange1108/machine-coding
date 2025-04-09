@@ -1,75 +1,105 @@
-import {useState} from "react";
+import {useCallback, useState} from "react";
 
-function Cell({filled, onClick, isDisabled, label}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      disabled={isDisabled}
-      onClick={onClick}
-      className={filled ? "cell cell-activated" : "cell"}
-    />
-  );
-}
+import "./App.css";
 
-export default function App() {
-  const [order, setOrder] = useState([]);
-  const [isDeactivating, setIsDeactivating] = useState(false);
+const SelectableGrid = ({rows = 10, cols = 10}) => {
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [selectedBoxes, setSelectedBoxes] = useState([]);
 
-  const config = [
-    [1, 1, 1],
-    [1, 0, 1],
-    [1, 1, 1],
-  ];
+  const handleMouseDown = (boxNumber) => {
+    setIsMouseDown(true);
+    setSelectedBoxes([boxNumber]);
+  };
 
-  const deactivateCells = () => {
-    setIsDeactivating(true);
-    const timer = setInterval(() => {
-      setOrder((origOrder) => {
-        const newOrder = origOrder.slice();
-        newOrder.pop();
+  const handleMouseEnter = useCallback(
+    (boxNumber) => {
+      if (isMouseDown) {
+        const startBox = selectedBoxes[0];
+        const endBox = boxNumber;
 
-        if (newOrder.length === 0) {
-          clearInterval(timer);
-          setIsDeactivating(false);
+        const startRow = Math.floor((startBox - 1) / cols); // Math.floor((23-1)/10) = 2
+        const startCol = (startBox - 1) % cols; // (23 -1)%10 = 22 % 10 = 2
+        const endRow = Math.floor((endBox - 1) / cols);
+        const endCol = (endBox - 1) % cols;
+
+        const minRow = Math.min(startRow, endRow);
+        const maxRow = Math.max(startRow, endRow);
+        const minCol = Math.min(startCol, endCol);
+        const maxCol = Math.max(startCol, endCol);
+
+        const selected = [];
+        for (let row = minRow; row <= maxRow; row++) {
+          for (let col = minCol; col <= maxCol; col++) {
+            selected.push(row * cols + col + 1);
+          }
         }
 
-        return newOrder;
-      });
-    }, 300);
-  };
+        setSelectedBoxes(selected);
+      }
+    },
+    [isMouseDown]
+  );
 
-  const activateCells = (index) => {
-    const newOrder = [...order, index];
-    setOrder(newOrder);
-    // deactivate
-    if (newOrder.length === config.flat(1).filter(Boolean).length) {
-      deactivateCells();
-    }
+  const handleMouseUp = () => {
+    setIsMouseDown(false);
   };
 
   return (
-    <div className="wrapper">
-      <div
-        className="grid"
-        style={{
-          gridTemplateColumns: `repeat(${config[0].length}, 1fr)`,
-        }}
-      >
-        {config.flat(1).map((value, index) => {
-          return value ? (
-            <Cell
-              key={index}
-              label={`Cell ${index}`}
-              filled={order.includes(index)}
-              onClick={() => activateCells(index)}
-              isDisabled={order.includes(index) || isDeactivating}
-            />
-          ) : (
-            <span />
-          );
-        })}
-      </div>
+    <div
+      className="grid"
+      style={{"--rows": rows, "--cols": cols}}
+      onMouseUp={handleMouseUp}
+    >
+      {[...Array(rows * cols).keys()].map((i) => (
+        <div
+          key={i}
+          className={`box ${selectedBoxes.includes(i + 1) ? "selected" : ""}`}
+          onMouseDown={() => handleMouseDown(i + 1)}
+          onMouseEnter={() => handleMouseEnter(i + 1)}
+        >
+          {i + 1}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+
+function App() {
+  return (
+    <div>
+      <h1>Selectable Grid</h1>
+      <SelectableGrid rows={10} cols={10} />
     </div>
   );
 }
+
+export default App;
+
+
+/*
+body {
+  font-family: Poppins;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 10), 35px);
+  grid-template-rows: repeat(var(--rows, 10), 35px);
+  gap: 2px;
+  user-select: none;
+}
+
+.box {
+  width: 35px;
+  height: 35px;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.selected {
+  background-color: lightblue;
+}
+*/

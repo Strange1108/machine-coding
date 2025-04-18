@@ -3,11 +3,15 @@ import React, { useEffect, useState } from 'react'
 const ProgessBar = ({progress}) => {
   const [animatedProgress, setAnimatedProgress] = useState(0);
 
-  useEffect(() => {
-    setTimeout(() =>{
-      setAnimatedProgress(progress);
-    }, 100)
-  }, [progress])
+    useEffect(() => {
+      const timeout = setTimeout(() => {
+        setAnimatedProgress(progress);
+      }, 100);
+  
+      return () => clearTimeout(timeout);
+    }, [progress]);
+
+
   return <div className='outer'>
     <div className='inner' 
       style={{
@@ -45,7 +49,6 @@ export default App
 //   border-radius: 10px;
 //   overflow: hidden;
 //   text-align: center;
-
 // }
 
 // .inner{
@@ -108,3 +111,44 @@ export default App
 // };
 
 // export default ProgressBarsApp;
+
+// import React, { useEffect, useState } from 'react';
+
+// const ProgressBar = ({ Progress }) => {
+//   const [animatedProgress, setAnimatedProgress] = useState(0);
+
+//   useEffect(() => {
+//     const timeout = setTimeout(() => {
+//       setAnimatedProgress(Progress);
+//     }, 100);
+
+//     return () => clearTimeout(timeout);
+//   }, [Progress]);
+
+//   return (
+//     <div className="border border-black my-[10px] mx-[2px] rounded-[10px] overflow-hidden">
+//       <div
+//         className={`bg-green-500 text-right p-1 transition-all ease-in duration-1000 ${
+//           Progress < 5 ? 'text-black' : 'text-white'
+//         }`}
+//         style={{ width: `${animatedProgress}%` }}
+//       >
+//         {animatedProgress}%
+//       </div>
+//     </div>
+//   );
+// };
+
+// const App = () => {
+//   const bars = [1, 10, 20, 30, 50, 70, 100];
+//   return (
+//     <div>
+//       <h1 className="text-center text-xl font-bold my-4">ProgressBar</h1>
+//       {bars.map((value) => (
+//         <ProgressBar key={value} Progress={value} />
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default App;

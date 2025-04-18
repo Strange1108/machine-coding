@@ -1,106 +1,98 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState } from 'react'
+import json from "./data.json";
 
-const App = () => {
-  const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [users, setUsers] = useState([]);
-  const [status, setStatus] = useState("idle"); // idle, loading, error, success
-  const [sortAsc, setSortAsc] = useState(true);
+const List = ({ list, addNodeToList, deleteNodeFromList }) => {
+  const [isExpanded, setIsExpanded] = useState({});
+  return (
+    <div className='container'>
+      {
+        list.map((node) => (
+          <div key={node.id}>
+            <div className="flex items-center">
+              {node.isFolder && (
+                <span className="cursor-pointer pr-1 font-bold"
+                  onClick={() =>
+                    setIsExpanded((prev) => ({
+                      ...prev,
+                      [node.name]: !prev[node.name],
+                    }))
+                  }
+                >
+                  {isExpanded?.[node.name] ? "-" : "+"}
+                </span>
+              )}
+              <span>{node.name}</span>
+              {node.isFolder && (<span onClick={() => addNodeToList(node.id)}>
+                {<img
+                  src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfMt43f5llkF5OgPwtIozkZk38jQu2r-3XCg&s'
+                  alt='add'
+                  className='w-[20px] ml-[20px]'
+                />
+                }
+              </span>
+              )
+              }
 
-  // Debounce query
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, 500);
+              {node.isFolder && (<span onClick={() => deleteNodeFromList(node.id)}>
+                {<img
+                  src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8GtBsi78JP0ImHJUBHcfVm_JSdw1mrsdyaw&s'
+                  alt='delete' className='w-[20px] ml-[20px]'
+                />
+                }
+              </span>
+              )
+              }
+            </div>
 
-    return () => clearTimeout(timer);
-  }, [query]);
-
-  const fetchUsers = useCallback(async () => {
-    if (!debouncedQuery) return;
-    setStatus("loading");
-
-    try {
-      const res = await fetch(
-        `https://api.github.com/search/users?q=${debouncedQuery}`
-      );
-      const data = await res.json();
-
-      if (data.items?.length > 0) {
-        setUsers(data.items);
-        setStatus("success");
-      } else {
-        setUsers([]);
-        setStatus("error");
+            {isExpanded?.[node.name] && node?.children && <List list={node.children} addNodeToList={addNodeToList} deleteNodeFromList={deleteNodeFromList}/>}
+          </div>
+        ))
       }
-    } catch (err) {
-      setStatus("error");
+    </div>
+  )
+}
+
+const FileExplorer = () => {
+  const [data, setData] = useState(json);
+
+  const addNodeToList = (parentId) => {
+    const name = prompt("Enter name: ")
+    const updateTree = (list) => {
+      return list.map(node => {
+        if (node.id === parentId) {
+          return {
+            ...node,
+            children: [...node.children, { id: Date.now().toString(), name: name, isFolder: true, children: [] }]
+          }
+        }
+        if (node.children) {
+          return { ...node, children: updateTree(node.children) };
+        }
+        return node;
+      });
+    };
+
+    setData((prev) => updateTree(prev));
+  };
+
+  const deleteNodeFromList = (itemId) => {
+    const updateTree = (list) => {
+      return list.filter(node => node.id !== itemId).map((node) => {
+        if(node.children) {
+          return {...node, children: updateTree(node.children)}
+        }
+        return node;
+    });
     }
-  }, [debouncedQuery]);
-
-  useEffect(() => {
-    fetchUsers();
-  }, [debouncedQuery, fetchUsers]);
-
-  const sortedUsers = [...users].sort((a, b) =>
-    sortAsc
-      ? a.login.localeCompare(b.login)
-      : b.login.localeCompare(a.login)
-  );
+    setData(prev => updateTree(prev));
+  }
 
   return (
-    <div className="min-h-screen p-6 bg-gray-100">
-      <div className="max-w-2xl mx-auto mb-6">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search GitHub username..."
-          className="w-full p-3 rounded-md border border-gray-300 shadow-sm"
-        />
-        <div className="flex justify-between items-center mt-4">
-          <p className="text-gray-600 text-sm">
-            {status === "idle" && "Search for a user"}
-            {status === "loading" && "Loading..."}
-            {status === "error" && "User not found"}
-          </p>
-          <button
-            onClick={() => setSortAsc((prev) => !prev)}
-            className="text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Sort {sortAsc ? "↓" : "↑"}
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-        {status === "success" &&
-          sortedUsers.map((user) => (
-            <div
-              key={user.id}
-              className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow"
-            >
-              <img
-                src={user.avatar_url}
-                alt={user.login}
-                className="w-20 h-20 rounded-full mx-auto"
-              />
-              <h3 className="mt-3 text-center font-semibold text-lg">
-                {user.login}
-              </h3>
-              <a
-                href={user.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-center text-blue-500 mt-2 hover:underline"
-              >
-                View Profile
-              </a>
-            </div>
-          ))}
-      </div>
+    <div className='App'>
+      <h1>File/Folder Explorer</h1>
+      <List list={data} addNodeToList={addNodeToList} deleteNodeFromList={deleteNodeFromList}/>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default FileExplorer

@@ -125,9 +125,13 @@ body {
   } */
   
 
-html.dark {
+/* html.dark {
   background-color: #1a202c;
   color: white;
+} */
+
+
+
+.parent{
+    padding-left: 20px;
 }
-
-

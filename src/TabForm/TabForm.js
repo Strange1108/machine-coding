@@ -74,9 +74,7 @@ const TabForm = () => {
     const ActiveTabComponent = tabs[activeTab].component;
   
     const handleNextClick = () =>{
-      console.log(tabs[activeTab]);
       if(tabs[activeTab].validate()){
-        console.log("next");
         setActiveTab((next) => next+1);
       }
     }

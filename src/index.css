@@ -132,7 +132,7 @@ body {
 
 
 
-.parent{
+/* .parent{
     padding-left: 20px;
 }
 
@@ -140,4 +140,33 @@ body {
     text-align: left;
     padding-left: 20px;
     max-width: 200px;
+} */
+
+
+
+.App{
+  font-family: sans-serif;
+  text-align: center;
+}
+  
+.heading-container{
+  display: flex;
+}
+
+.heading{
+  padding: 5px;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.tab-body{
+  display: flex;
+  border: 1px solid black;
+  height: 200px;
+  padding: 5px;
+}
+.error{
+  color: red;
+  display: block;
+  font: small;
 }

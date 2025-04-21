@@ -1,13 +1,15 @@
-import {useState} from "react";
+import { useState } from "react";
 
-function Cell({filled, onClick, isDisabled, label}) {
+function Cell({ filled, onClick, isDisabled, label }) {
   return (
     <button
       type="button"
       aria-label={label}
       disabled={isDisabled}
       onClick={onClick}
-      className={filled ? "cell cell-activated" : "cell"}
+      className={`border border-black h-0 pb-[100%] ${
+        filled ? "bg-green-500" : "bg-transparent"
+      }`}
     />
   );
 }
@@ -42,22 +44,19 @@ export default function App() {
   const activateCells = (index) => {
     const newOrder = [...order, index];
     setOrder(newOrder);
-    // deactivate
-    if (newOrder.length === config.flat(1).filter(Boolean).length) {
+
+    if (newOrder.length === config.flat().filter(Boolean).length) {
       deactivateCells();
     }
   };
 
   return (
-    <div className="wrapper">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gray-100">
       <div
-        className="grid"
-        style={{
-          gridTemplateColumns: `repeat(${config[0].length}, 1fr)`,
-        }}
+        className={`grid max-w-[300px] w-full p-5 gap-5 border border-black grid-cols-${config[0].length}`}
       >
-        {config.flat(1).map((value, index) => {
-          return value ? (
+        {config.flat().map((value, index) =>
+          value ? (
             <Cell
               key={index}
               label={`Cell ${index}`}
@@ -66,9 +65,9 @@ export default function App() {
               isDisabled={order.includes(index) || isDeactivating}
             />
           ) : (
-            <span />
-          );
-        })}
+            <div key={index} className="invisible" />
+          )
+        )}
       </div>
     </div>
   );

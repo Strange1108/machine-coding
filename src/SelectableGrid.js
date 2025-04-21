@@ -46,14 +46,17 @@ const SelectableGrid = ({rows = 10, cols = 10}) => {
 
   return (
     <div
-      className="grid"
-      style={{"--rows": rows, "--cols": cols}}
+      className="grid gap-[2px] select-none"
+      style={{
+        gridTemplateColumns: `repeat(${cols}, 35px)`,
+        gridTemplateRows: `repeat(${rows}, 35px)`,
+      }}
       onMouseUp={handleMouseUp}
     >
       {[...Array(rows * cols).keys()].map((i) => (
         <div
           key={i}
-          className={`box ${selectedBoxes.includes(i + 1) ? "selected" : ""}`}
+          className={`w-[35px] h-[35px] border border-black flex justify-center items-center ${selectedBoxes.includes(i + 1) ? "bg-[lightblue]" : ""}`}
           onMouseDown={() => handleMouseDown(i + 1)}
           onMouseEnter={() => handleMouseEnter(i + 1)}
         >
@@ -75,31 +78,3 @@ function App() {
 }
 
 export default App;
-
-
-/*
-body {
-  font-family: Poppins;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(var(--cols, 10), 35px);
-  grid-template-rows: repeat(var(--rows, 10), 35px);
-  gap: 2px;
-  user-select: none;
-}
-
-.box {
-  width: 35px;
-  height: 35px;
-  border: 1px solid black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.selected {
-  background-color: lightblue;
-}
-*/

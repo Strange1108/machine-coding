@@ -1,75 +1,89 @@
-import {useState} from "react";
+import React, { useState, useEffect } from 'react';
 
-function Cell({filled, onClick, isDisabled, label}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      disabled={isDisabled}
-      onClick={onClick}
-      className={filled ? "cell cell-activated" : "cell"}
-    />
-  );
-}
+const JobBoard = () => {
+  const [jobIds, setJobIds] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
 
-export default function App() {
-  const [order, setOrder] = useState([]);
-  const [isDeactivating, setIsDeactivating] = useState(false);
+  useEffect(() => {
+    const fetchJobIds = async () => {
+      const response = await fetch('https://hacker-news.firebaseio.com/v0/jobstories.json');
+      const data = await response.json();
+      setJobIds(data);
+    };
+    fetchJobIds();
+  }, []);
 
-  const config = [
-    [1, 1, 1],
-    [1, 0, 1],
-    [1, 1, 1],
-  ];
+  useEffect(() => {
 
-  const deactivateCells = () => {
-    setIsDeactivating(true);
-    const timer = setInterval(() => {
-      setOrder((origOrder) => {
-        const newOrder = origOrder.slice();
-        newOrder.pop();
+    const fetchJobDetails = async () => {
+      setIsLoading(true);
 
-        if (newOrder.length === 0) {
-          clearInterval(timer);
-          setIsDeactivating(false);
-        }
-
-        return newOrder;
+      const jobDetailsPromises = jobIds.slice((page - 1) * 6, page * 6).map(async (id) => {
+        const response = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`);
+        return await response.json();
       });
-    }, 300);
+
+      const jobDetails = await Promise.all(jobDetailsPromises);
+      
+      if (page === 1) {
+        setJobs(jobDetails);
+      } else {
+        setJobs((prevJobs) => [...prevJobs, ...jobDetails]);
+      }
+
+      setIsLoading(false);
+    };
+    
+    if (jobIds.length > 0) {
+      fetchJobDetails();
+    }
+  }, [jobIds, page]);
+
+  const handleLoadMore = () => {
+    setPage(page + 1);
   };
 
-  const activateCells = (index) => {
-    const newOrder = [...order, index];
-    setOrder(newOrder);
-    // deactivate
-    if (newOrder.length === config.flat(1).filter(Boolean).length) {
-      deactivateCells();
-    }
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString();
   };
 
   return (
-    <div className="wrapper">
-      <div
-        className="grid"
-        style={{
-          gridTemplateColumns: `repeat(${config[0].length}, 1fr)`,
-        }}
-      >
-        {config.flat(1).map((value, index) => {
-          return value ? (
-            <Cell
-              key={index}
-              label={`Cell ${index}`}
-              filled={order.includes(index)}
-              onClick={() => activateCells(index)}
-              isDisabled={order.includes(index) || isDeactivating}
-            />
-          ) : (
-            <span />
-          );
-        })}
+    <div className="bg-gray-100 py-8">
+      <div className="max-w-screen-lg mx-auto">
+        <h1 className="text-3xl font-bold mb-4 text-center text-orange-500">Hacker News Jobs Board</h1>
+        <div className="space-y-4">
+          {jobs.map((job) => (
+            <div key={job.id} className="bg-white rounded-lg shadow-md p-6">
+              {job.url ? (
+                <a href={job.url} target="_blank" rel="noreferrer" className="text-orange-600 font-bold hover:underline">
+                  {job.title}
+                </a>
+              ) : (
+                <div className="text-orange-600 font-bold">{job.title}</div>
+              )}
+              <p className="text-gray-600 mt-2">Posted by {job.by} on {formatTimestamp(job.time)}</p>
+            </div>
+          ))}
+        </div>
+        {isLoading ? (
+          <div className="flex justify-center mt-6">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          </div>
+        ) : (
+          <button
+            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg block mx-auto mt-6"
+            onClick={handleLoadMore}
+            disabled={jobs.length === 0 || jobs.length % 6 !== 0}
+          >
+            Load more
+          </button>
+        )}
       </div>
     </div>
   );
-}
+};
+
+export default JobBoard;

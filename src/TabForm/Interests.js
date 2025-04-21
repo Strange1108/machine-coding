@@ -3,7 +3,7 @@ import React from 'react'
 const Interests = ({data, setData, errors}) => {
     const {interests} = data;
 
-    const handleDataChange = (e, name) => {
+    const handleDataChange = (e) => {
         setData((prevState) => ({...prevState, 
             interests:  e.target.checked ?
             [...prevState.interests, e.target.name] : 

@@ -61,7 +61,7 @@ const MemoryGame = () => {
       if (id !== flipped[0]) {
         setFlipped([...flipped, id]);
         // check match logic
-        checkMatch(id);
+        checkMatch(id); 
       } else {
         setFlipped([]);
         setDisabled(false);

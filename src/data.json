@@ -1,65 +1,65 @@
-[
-    {
-        "id":"1",
-        "name": "public",
-        "isFolder": true,
-        "children": [
+        [
             {
-                "id":"2",
-                "name": "index.html",
-                "isFolder": false
-            }
-        ]
-    },
-    {
-        "id":"3",
-        "name": "src",
-        "isFolder": true,
-        "children": [
-            {
-                "id":"4",
-                "name": "components",
+                "id":"1",
+                "name": "public",
                 "isFolder": true,
                 "children": [
                     {
-                        "id":"5",
-                        "name": "test",
-                        "isFolder": true,
-                        "children": [
-                            {
-                                "id":"6",
-                                "name": "file.js",
-                                "isFolder": false
-                            }
-                        ]
+                        "id":"2",
+                        "name": "index.html",
+                        "isFolder": false
                     }
                 ]
             },
             {
-                "id":"7",
-                "name": "App.js",
-                "isFolder": false
+                "id":"3",
+                "name": "src",
+                "isFolder": true,
+                "children": [
+                    {
+                        "id":"4",
+                        "name": "components",
+                        "isFolder": true,
+                        "children": [
+                            {
+                                "id":"5",
+                                "name": "test",
+                                "isFolder": true,
+                                "children": [
+                                    {
+                                        "id":"6",
+                                        "name": "file.js",
+                                        "isFolder": false
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id":"7",
+                        "name": "App.js",
+                        "isFolder": false
+                    },
+                    {
+                        "id":"8",
+                        "name": "data.json",
+                        "isFolder": false
+                    },
+                    {
+                        "id":"9",
+                        "name": "index.js",
+                        "isFolder": false
+                    },
+                    {
+                        "id":"10",
+                        "name": "style.css",
+                        "isFolder": false
+                    }
+                ]
             },
             {
-                "id":"8",
-                "name": "data.json",
-                "isFolder": false
-            },
-            {
-                "id":"9",
-                "name": "index.js",
-                "isFolder": false
-            },
-            {
-                "id":"10",
-                "name": "style.css",
+                "id":"11",
+                "name": "package.json",
                 "isFolder": false
             }
         ]
-    },
-    {
-        "id":"11",
-        "name": "package.json",
-        "isFolder": false
-    }
-]

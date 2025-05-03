@@ -315,7 +315,7 @@ body {
   } */
 
 
-
+/* 
 .card {
   margin: 20px auto;
   border: 1px solid #ddd;
@@ -366,4 +366,22 @@ body {
   100% {
     transform: translateX(100%);
   }
+} */
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.image-post {
+  height: 400px;
+  width: 300px;
+  margin: 5px;
+  object-fit: cover;
 }

@@ -1,0 +1,155 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f1f5f9;
+  margin: 0;
+  padding: 0;
+}
+
+.stepper-container {
+  max-width: 650px;
+  margin: 40px auto;
+  padding: 24px;
+}
+
+/* Header container distributing step items */
+.stepper-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 35px;
+}
+
+/* Wrapper containing a step item and its trailing connector line */
+.step-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+/* The last step doesn't have a trailing connector line */
+.step-wrapper:last-child {
+  flex: 0;
+}
+
+/* Step Circle & Name */
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+}
+
+.step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e2e8f0;
+  color: #64748b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.step-circle.active {
+  background-color: #2563eb;
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+.step-circle.complete {
+  background-color: #16a34a;
+  color: #fff;
+}
+
+.step-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  white-space: nowrap;
+}
+
+/* Connecting Line */
+.step-line {
+  flex: 1;
+  height: 3px;
+  background-color: #e2e8f0;
+  margin: 0 10px;
+  transform: translateY(-13px);
+  /* Aligns line vertically with the 36px circle */
+  transition: background-color 0.3s ease;
+}
+
+.step-line.complete {
+  background-color: #16a34a;
+}
+
+/* Content Area */
+.step-content {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 32px 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.active-component {
+  font-size: 16px;
+  color: #1e293b;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.completion-screen {
+  text-align: center;
+}
+
+.completion-screen h3 {
+  color: #16a34a;
+  margin-bottom: 20px;
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.btn-secondary {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #cbd5e1;
+}

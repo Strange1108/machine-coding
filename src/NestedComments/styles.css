@@ -1,0 +1,50 @@
+.App {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: sans-serif;
+}
+
+.new-comment input {
+    padding: 6px;
+    width: 70%;
+    margin-right: 10px;
+}
+
+.new-comment button {
+    padding: 6px 10px;
+}
+
+.comment {
+    margin-left: 20px;
+    margin-top: 15px;
+    padding-left: 10px;
+    border-left: 1px solid #ccc;
+}
+
+.reply-box {
+    margin-top: 6px;
+}
+
+.reply-box input {
+    padding: 5px;
+    width: 60%;
+    margin-right: 8px;
+}
+
+.reply-box button {
+    padding: 5px 8px;
+}
+
+.reply-btn {
+    margin-top: 5px;
+    font-size: 12px;
+    background: none;
+    border: none;
+    color: blue;
+    cursor: pointer;
+}
+
+.replies {
+    margin-top: 10px;
+}

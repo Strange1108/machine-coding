@@ -1,10 +1,10 @@
 import React from "react";
-import DragAndDropApp from "./DragandDrops/App";
+import NestedCommentsApp from "./NestedComments/App";
 
 export default function App() {
   return (
     <div className="App">
-      <DragAndDropApp />
+      <NestedCommentsApp />
     </div>
   );
 }

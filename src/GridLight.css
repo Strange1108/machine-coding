@@ -1,0 +1,40 @@
+.grid-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background-color: #f3f4f6;
+}
+
+.grid {
+  display: grid;
+  max-width: 300px;
+  width: 100%;
+  padding: 20px;
+  gap: 20px;
+  border: 1px solid #000;
+  box-sizing: border-box;
+}
+
+.cell {
+  background-color: transparent;
+  border: 1px solid #000;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cell.filled {
+  background-color: #22c55e;
+}
+
+.cell:disabled {
+  cursor: not-allowed;
+}
+
+.cell-hidden {
+  visibility: hidden;
+}

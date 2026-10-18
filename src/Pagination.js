@@ -1,110 +1,123 @@
-import { useState } from 'react';
+import React, { useState } from "react";
+// import './styles.css'; // Uncomment if you have a styles.css file
 
-const UsersTable = () => {
-  // Sample user data
-  const users = [
-    { id: 1, name: 'John Doe', age: 25, occupation: 'Developer' },
-    { id: 2, name: 'Jane Smith', age: 30, occupation: 'Designer' },
-    { id: 3, name: 'Bob Johnson', age: 35, occupation: 'Manager' },
-    { id: 4, name: 'Alice Brown', age: 28, occupation: 'Engineer' },
-    { id: 5, name: 'Charlie Wilson', age: 32, occupation: 'Analyst' },
-    { id: 6, name: 'Eva Davis', age: 27, occupation: 'Developer' },
-    { id: 7, name: 'Frank Miller', age: 40, occupation: 'Director' },
-    { id: 8, name: 'Grace Taylor', age: 29, occupation: 'Designer' },
-    { id: 9, name: 'Henry Clark', age: 33, occupation: 'Engineer' },
-    { id: 10, name: 'Ivy Anderson', age: 31, occupation: 'Manager' },
-    { id: 11, name: 'Jack White', age: 36, occupation: 'Analyst' },
-    { id: 12, name: 'Kelly Green', age: 34, occupation: 'Developer' },
-  ];
+function DataTable({ data = [] }) {
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+    // Calculate total pages
+    const totalPages = Math.ceil(data.length / pageSize);
 
-  // Calculate pagination values
-  const totalPages = Math.ceil(users.length / pageSize);
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const currentUsers = users.slice(startIndex, endIndex);
+    // Pagination navigation handlers
+    const handleNext = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage((prev) => prev + 1);
+        }
+    };
 
-  // Navigation handlers
-  const goToNextPage = () => {
-    setCurrentPage(page => Math.min(page + 1, totalPages));
-  };
+    const handlePrevious = () => {
+        if (currentPage > 1) {
+            setCurrentPage((prev) => prev - 1);
+        }
+    };
 
-  const goToPreviousPage = () => {
-    setCurrentPage(page => Math.max(page - 1, 1));
-  };
+    const handlePageSizeChange = (e) => {
+        setPageSize(Number(e.target.value));
+        setCurrentPage(1); // Reset to first page when page size changes
+    };
 
-  const handlePageSizeChange = (e) => {
-    const newSize = parseInt(e.target.value);
-    setPageSize(newSize);
-    setCurrentPage(1); // Reset to first page when changing page size
-  };
+    // Slice data for current page
+    const startIndex = (currentPage - 1) * pageSize;
+    const currentData = data.slice(startIndex, startIndex + pageSize);
 
-  return (
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Page Size Selector */}
-      <div className="mb-4 flex items-center">
-        <label className="mr-2">Users per page:</label>
-        <select
-          value={pageSize}
-          onChange={handlePageSizeChange}
-          className="border rounded p-1"
-        >
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-        </select>
-      </div>
+    // Extract table column headers dynamically from first row
+    const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
-      {/* Users Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border rounded-lg">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">ID</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Name</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Age</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Occupation</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {currentUsers.map(user => (
-              <tr key={user.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-900">{user.id}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{user.name}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{user.age}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{user.occupation}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    return (
+        <div style={{ maxWidth: "600px", margin: "auto" }}>
+            <h2>Data Table</h2>
+            {data.length === 0 ? (
+                    <p>No data available.</p>
+            ) : (
+                <>
+                    <table
+                        border="1"
+                        cellPadding="10"
+                        style={{ width: "100%", borderCollapse: "collapse" }}
+                    >
+                        <thead>
+                            <tr>
+                                {headers.map((key) => (
+                                    <th key={key}>{key}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentData.map((row, idx) => (
+                                <tr key={idx}>
+                                    {headers.map((key) => (
+                                        <td key={key}>{row[key]}</td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
 
-      {/* Pagination Controls */}
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex space-x-2">
-          <button
-            onClick={goToPreviousPage}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-          >
-            Previous
-          </button>
-          <button
-            onClick={goToNextPage}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-          >
-            Next
-          </button>
+                    {/* Pagination Controls */}
+                    <div
+                        style={{
+                            marginTop: "10px",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                        }}
+                    >
+                        <div>
+                            <button onClick={handlePrevious} disabled={currentPage === 1}>
+                                Previous
+                            </button>
+                            <span style={{ margin: "0 10px" }}>
+                                Page {currentPage} of {totalPages}
+                            </span>
+                            <button onClick={handleNext} disabled={currentPage === totalPages}>
+                                Next
+                            </button>
+                        </div>
+
+                        <div>
+                            Rows per page:{" "}
+                            <select value={pageSize} onChange={handlePageSizeChange}>
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={15}>15</option>
+                            </select>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
-        <div className="text-sm text-gray-600">
-          Page {currentPage} of {totalPages}
-        </div>
-      </div>
-    </div>
-  );
-};
+    );
+}
 
-export default UsersTable;
+export default DataTable;
+
+
+
+// import DataTable from "./DataTable";
+
+// export default function App() {
+//     const sampleData = [
+//         { id: 1, name: "Alice", age: 25 },
+//         { id: 2, name: "Bob", age: 30 },
+//         { id: 3, name: "Charlie", age: 22 },
+//         { id: 4, name: "David", age: 28 },
+//         { id: 5, name: "Eve", age: 27 },
+//         { id: 6, name: "Frank", age: 33 },
+//         { id: 7, name: "Grace", age: 24 },
+//         { id: 8, name: "Hank", age: 26 },
+//         { id: 9, name: "Ivy", age: 21 },
+//         { id: 10, name: "Jack", age: 29 }
+//     ];
+
+//     return <DataTable data={sampleData} />;
+// }

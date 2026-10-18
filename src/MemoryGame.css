@@ -1,0 +1,115 @@
+.memory-game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.game-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #1f2937;
+}
+
+.input-container {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.input-label {
+  margin-right: 8px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.grid-input {
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.grid-input:focus {
+  border-color: #3b82f6;
+}
+
+.game-board {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.card {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+  background-color: #d1d5db;
+  color: #9ca3af;
+}
+
+.card:hover:not(.flipped):not(.solved) {
+  background-color: #9ca3af;
+  color: #4b5563;
+}
+
+.card.flipped {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.card.solved {
+  background-color: #22c55e;
+  color: #ffffff;
+  cursor: default;
+}
+
+.won-message {
+  margin-top: 16px;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #16a34a;
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.reset-btn {
+  margin-top: 16px;
+  padding: 8px 16px;
+  background-color: #22c55e;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.reset-btn:hover {
+  background-color: #16a34a;
+}

@@ -1,70 +1,90 @@
 import React, { useState, useEffect } from "react";
-// Toast Component
-const Toast = ({ message, type, duration }) => {
-  const [visible, setVisible] = useState(true);
+
+// Individual Toast with self-contained timer cleanup & dismiss button
+const Toast = ({ id, message, type = "info", duration = 3000, onClose }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      setVisible(false);
+      onClose(id);
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration]);
+  }, [id, duration, onClose]);
 
-  if (!visible) return null;
   const backgroundColor =
-    type === "success" ? "green" : type === "error" ? "red" : "blue";
-  return (
-    <div
-      style={{
-        padding: "10px 20px",
-        backgroundColor,
-        color: "white",
-        borderRadius: "5px",
-        fontSize: "14px",
-        zIndex: 1000,
-        width: "200px",
-      }}
-    >
-      {message}
-    </div>
-  );
-};
-
-const ToastContainer = () => {
-  const [toasts, setToasts] = useState([]);
-  const addToast = (message, type, duration) => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type, duration }]);
-    setTimeout(() => {
-      removeToast(id);
-    }, duration);
-  };
-  const removeToast = (id) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  };
+    type === "success" ? "#16a34a" : type === "error" ? "#dc2626" : "#2563eb";
 
   return (
     <div
       style={{
         display: "flex",
-        justifyContent: "center",
         alignItems: "center",
-        top: "20px",
-        right: "20px",
-        flexDirection: "column",
-        gap: "10px",
-        zIndex: 999,
-        width: "100%",
+        justifyContent: "space-between",
+        gap: "12px",
+        padding: "10px 16px",
+        backgroundColor,
+        color: "white",
+        borderRadius: "6px",
+        fontSize: "14px",
+        boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
+        minWidth: "220px",
       }}
     >
-      <div
+      <span>{message}</span>
+      <button
+        onClick={() => onClose(id)}
         style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "10px",
-          margin: "40px 0",
+          background: "transparent",
+          border: "none",
+          color: "white",
+          cursor: "pointer",
+          fontWeight: "bold",
+          fontSize: "14px",
         }}
       >
+        ✕
+      </button>
+    </div>
+  );
+};
+
+// Fixed overlay container for toasts
+const ToastPortal = ({ toasts, removeToast }) => {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: "20px",
+        right: "20px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+        zIndex: 9999,
+        pointerEvents: "auto",
+      }}
+    >
+      {toasts.map((toast) => (
+        <Toast key={toast.id} {...toast} onClose={removeToast} />
+      ))}
+    </div>
+  );
+};
+
+const App = () => {
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (message, type = "info", duration = 3000) => {
+    const id = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    setToasts((prev) => [...prev, { id, message, type, duration }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  };
+
+  return (
+    <div style={{ padding: "40px", textAlign: "center" }}>
+      <h2>Toast Notification Demo</h2>
+      <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginTop: "20px" }}>
         <button onClick={() => addToast("Success Message", "success", 3000)}>
           Show Success
         </button>
@@ -75,17 +95,9 @@ const ToastContainer = () => {
           Show Info
         </button>
       </div>
-      {toasts.map(({ id, message, type, duration }) => (
-        <Toast key={id} message={message} type={type} duration={duration} />
-      ))}
-    </div>
-  );
-};
 
-const App = () => {
-  return (
-    <div>
-      <ToastContainer />
+      {/* Renders fixed in top-right without interfering with page buttons */}
+      <ToastPortal toasts={toasts} removeToast={removeToast} />
     </div>
   );
 };

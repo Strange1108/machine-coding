@@ -1,0 +1,81 @@
+.like-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.like-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: 1px solid #888;
+  background-color: #fff;
+  color: #888;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover state when button is not liked and not disabled */
+.like-button:hover:not(:disabled) {
+  border-color: #f00;
+  color: #f00;
+}
+
+/* Liked state */
+.like-button.liked {
+  background-color: #f00;
+  border-color: #f00;
+  color: #fff;
+}
+
+/* Liked state on hover */
+.like-button.liked:hover:not(:disabled) {
+  background-color: #f00;
+  border-color: #f00;
+  color: #fff;
+}
+
+/* Disabled / Loading state */
+.like-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+/* Spinner */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Heart Icon */
+.heart-icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* Error message */
+.error-message {
+  color: #f00;
+  font-size: 14px;
+}

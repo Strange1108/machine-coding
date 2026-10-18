@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./TodoApp.css";
 
 const TodoApp = () => {
   const [tasks, setTasks] = useState([]);
@@ -42,81 +43,68 @@ const TodoApp = () => {
   });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-4">To-Do List</h1>
+    <div className="todo-container">
+      <div className="todo-card">
+        <h1 className="todo-title">To-Do List</h1>
 
         {/* Add Task */}
-        <div className="flex gap-2 mb-4">
+        <div className="todo-input-row">
           <input
             type="text"
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
             placeholder="Enter a new task"
-            className="flex-1 px-4 py-2 border rounded" 
+            className="todo-input"
           />
-          <button
-            onClick={handleAddTask}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
+          <button onClick={handleAddTask} className="btn-primary">
             Add
           </button>
         </div>
 
         {/* Filter Tasks */}
-        <div className="flex justify-between mb-4">
+        <div className="todo-filters">
           <button
             onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded ${
-              filter === "all" ? "bg-blue-500 text-white" : "bg-gray-200"
-            }`}
+            className={`filter-btn ${filter === "all" ? "active" : ""}`}
           >
             All
           </button>
           <button
             onClick={() => setFilter("completed")}
-            className={`px-4 py-2 rounded ${
-              filter === "completed" ? "bg-blue-500 text-white" : "bg-gray-200"
-            }`}
+            className={`filter-btn ${filter === "completed" ? "active" : ""}`}
           >
             Completed
           </button>
           <button
             onClick={() => setFilter("incomplete")}
-            className={`px-4 py-2 rounded ${
-              filter === "incomplete" ? "bg-blue-500 text-white" : "bg-gray-200"
-            }`}
+            className={`filter-btn ${filter === "incomplete" ? "active" : ""}`}
           >
             Incomplete
           </button>
         </div>
 
         {/* Task List */}
-        <ul className="space-y-2">
+        <ul className="todo-list">
           {filteredTasks.map((task) => (
-            <li
-              key={task.id}
-              className="flex justify-between items-center p-2 border rounded"
-            >
-              <div
-                className={`flex-1 ${
-                  task.completed ? "line-through text-gray-500" : ""
-                }`}
+            <li key={task.id} className="todo-item">
+              <span
+                className={`todo-text ${task.completed ? "completed" : ""}`}
               >
                 {task.text}
-              </div>
-              <div className="flex gap-2">
+              </span>
+              <div className="todo-actions">
                 <button
                   onClick={() => toggleTaskCompletion(task.id)}
-                  className={`px-2 py-1 rounded ${
-                    task.completed ? "bg-green-500 text-white" : "bg-gray-200"
+                  className={`btn-sm btn-toggle ${
+                    task.completed ? "completed" : ""
                   }`}
                 >
                   {task.completed ? "Undo" : "Complete"}
                 </button>
                 <button
                   onClick={() => handleDeleteTask(task.id)}
-                  className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                  className="btn-sm btn-delete"
                 >
                   Delete
                 </button>
@@ -130,3 +118,4 @@ const TodoApp = () => {
 };
 
 export default TodoApp;
+

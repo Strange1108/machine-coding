@@ -38,7 +38,7 @@ const Posts = ({ imageArray, setPageNo }) => {
     <div className="container">
       {imageArray.map((item, index) => {
         return (
-          <img className="image-post" key={item.id} src={item.download_url} />
+          <img alt={item.id} className="image-post" key={item.id} src={item.download_url} />
         );
       })}
     </div>

@@ -1,0 +1,67 @@
+.holy-grail {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.holy-grail-header {
+  height: 60px;
+  background-color: #ff6f61;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.holy-grail-body {
+  display: flex;
+  flex: 1;
+}
+
+.holy-grail-nav {
+  width: 100px;
+  background-color: #ff6f61;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.holy-grail-main {
+  flex: 1;
+  background-color: #ffe4c4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.holy-grail-sidebar {
+  width: 100px;
+  background-color: #deb887;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.holy-grail-footer {
+  height: 100px;
+  background-color: #708090;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive adjustment for smaller screens */
+@media (max-width: 600px) {
+  .holy-grail-body {
+    flex-direction: column;
+  }
+
+  .holy-grail-nav,
+  .holy-grail-sidebar {
+    width: 100%;
+    min-height: 50px;
+  }
+
+  .holy-grail-main {
+    min-height: 150px;
+  }
+}

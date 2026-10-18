@@ -1,76 +1,117 @@
-import React from 'react';
+import React, { useState } from "react";
 
-const ContactForm = () => {
+function ContactForm() {
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [errors, setErrors] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const [submittedName, setSubmittedName] = useState(""); // ⬅ New state
+
+  const validate = () => {
+    const newErrors = {};
+    if (!form.name.trim()) newErrors.name = "Name is required";
+    if (!form.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+      newErrors.email = "Invalid email format";
+    }
+    if (!form.message.trim()) newErrors.message = "Message is required";
+    return newErrors;
+  };
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+    } else {
+      setSubmittedName(form.name); // ⬅ Save name before resetting
+      setSubmitted(true);
+      setErrors({});
+      setForm({ name: "", email: "", message: "" });
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">Contact Us</h1>
-        <form
-          action="https://www.greatfrontend.com/api/questions/contact-form"
-          method="POST"
-          className="space-y-4"
-        >
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-semibold text-gray-600 mb-2"
-            >
-              Name
-            </label>
+    <div
+      style={{
+        maxWidth: "400px",
+        margin: "2rem auto",
+        padding: "2rem",
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
+      {submitted ? (
+        <h2 style={{ textAlign: "center" }}>
+          Thank you, {submittedName}!
+        </h2>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: "1rem" }}>
+            <label htmlFor="name">Name:</label>
             <input
-              type="text"
               id="name"
+              type="text"
               name="name"
-              required
-              placeholder="Your name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={form.name}
+              onChange={handleChange}
+              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
             />
+            {errors.name && (
+              <p style={{ color: "red", margin: 0 }}>{errors.name}</p>
+            )}
           </div>
-
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-semibold text-gray-600 mb-2"
-            >
-              Email
-            </label>
+          <div style={{ marginBottom: "1rem" }}>
+            <label htmlFor="email">Email:</label>
             <input
-              type="email"
               id="email"
+              type="email"
               name="email"
-              required
-              placeholder="Your email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={form.email}
+              onChange={handleChange}
+              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
             />
+            {errors.email && (
+              <p style={{ color: "red", margin: 0 }}>{errors.email}</p>
+            )}
           </div>
-
-          <div>
-            <label
-              htmlFor="message"
-              className="block text-sm font-semibold text-gray-600 mb-2"
-            >
-              Message
-            </label>
+          <div style={{ marginBottom: "1rem" }}>
+            <label htmlFor="message">Message:</label>
             <textarea
               id="message"
               name="message"
-              rows="5"
-              required
-              placeholder="Your message"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            ></textarea>
+              value={form.message}
+              onChange={handleChange}
+              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
+            />
+            {errors.message && (
+              <p style={{ color: "red", margin: 0 }}>{errors.message}</p>
+            )}
           </div>
-
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={{
+              width: "100%",
+              padding: "0.75rem",
+              backgroundColor: "#007bff",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
           >
-            Send
+            Submit
           </button>
         </form>
-      </div>
+      )}
     </div>
   );
-};
+}
 
 export default ContactForm;

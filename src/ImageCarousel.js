@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import './ImageCarousel.css';
 
 const ImageCarousel = () => {
   // Sample image URLs - in practice these would be passed as props
@@ -31,42 +32,40 @@ const ImageCarousel = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-5 w-full">
-      <div className="relative w-full max-w-[600px] h-[400px] bg-black">
+    <div className="carousel-container">
+      <div className="carousel">
         {/* Main image container */}
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="carousel-slide">
           <img
             src={images[currentIndex]}
             alt={`Slide ${currentIndex + 1}`}
-            className="max-w-full max-h-full object-contain"
+            className="carousel-image"
           />
         </div>
 
         {/* Navigation buttons */}
         <button
           onClick={handlePrevious}
-          className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-r"
+          className="carousel-btn carousel-btn-prev"
           aria-label="Previous image"
         >
           <ChevronLeft size={24} />
         </button>
         <button
           onClick={handleNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-l"
+          className="carousel-btn carousel-btn-next"
           aria-label="Next image"
         >
           <ChevronRight size={24} />
         </button>
 
         {/* Dot indicators */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+        <div className="carousel-dots">
           {images.map((_, index) => (
             <button
               key={index}
               onClick={() => handleDotClick(index)}
-              className={`w-3 h-3 rounded-full transition-colors ${
-                currentIndex === index ? 'bg-white' : 'bg-white/50 hover:bg-white/70'
-              }`}
+              className={`carousel-dot ${currentIndex === index ? 'active' : ''}`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}

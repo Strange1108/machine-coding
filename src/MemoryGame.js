@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./MemoryGame.css";
 
 const MemoryGame = () => {
   const [gridSize, setGridSize] = useState(4);
@@ -79,11 +80,11 @@ const MemoryGame = () => {
   }, [solved, cards]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-grey-100 p-4">
-      <h1 className="text-3xl font-bold mb-6">Memory Game</h1>
+    <div className="memory-game-container">
+      <h1 className="game-title">Memory Game</h1>
       {/* Input */}
-      <div className="mb-4">
-        <label htmlFor="gridSize" className="mr-2">
+      <div className="input-container">
+        <label htmlFor="gridSize" className="input-label">
           Grid Size: (max 10)
         </label>
         <input
@@ -93,30 +94,30 @@ const MemoryGame = () => {
           max="10"
           value={gridSize}
           onChange={handleGridSizeChange}
-          className="border-2 border-gray-300 rounded px-2 py-1"
+          className="grid-input"
         />
       </div>
 
       {/* Game Board */}
       <div
-        className={`grid gap-2 mb-4`}
+        className="game-board"
         style={{
-          gridTemplateColumns: `repeat(${gridSize}, minmax(0,1fr))`,
+          gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
           width: `min(100%, ${gridSize * 5.5}rem)`,
         }}
       >
         {cards.map((card) => {
+          const cardClass = isSolved(card.id)
+            ? "card solved"
+            : isFlipped(card.id)
+            ? "card flipped"
+            : "card";
+
           return (
             <div
               key={card.id}
               onClick={() => handleClick(card.id)}
-              className={`aspect-square flex items-center justify-center text-xl font-bold rounded-lg cursor-pointer transition-all duration-300  ${
-                isFlipped(card.id)
-                  ? isSolved(card.id)
-                    ? "bg-green-500 text-white"
-                    : "bg-blue-500 text-white"
-                  : "bg-gray-300 text-gray-400"
-              }`}
+              className={cardClass}
             >
               {isFlipped(card.id) ? card.number : "?"}
             </div>
@@ -126,7 +127,7 @@ const MemoryGame = () => {
 
       {/* Result */}
       {won && (
-        <div className="mt-4 text-4xl font-bold text-green-600 animate-bounce">
+        <div className="won-message">
           You Won!
         </div>
       )}
@@ -134,7 +135,7 @@ const MemoryGame = () => {
       {/* Reset / Play Again Btn */}
       <button
         onClick={initializeGame}
-        className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+        className="reset-btn"
       >
         {won ? "Play Again" : "Reset"}
       </button>

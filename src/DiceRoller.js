@@ -1,42 +1,64 @@
 import { useState } from 'react';
 
+const dotPositions = {
+  1: ['center'],
+  2: ['top-right', 'bottom-left'],
+  3: ['top-right', 'center', 'bottom-left'],
+  4: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
+  5: ['top-left', 'top-right', 'center', 'bottom-left', 'bottom-right'],
+  6: ['top-left', 'top-right', 'middle-left', 'middle-right', 'bottom-left', 'bottom-right']
+};
+
+const getDotStyle = (position) => {
+  const base = {
+    position: 'absolute',
+    width: '12px',
+    height: '12px',
+    backgroundColor: '#000',
+    borderRadius: '50%'
+  };  
+
+  switch (position) {
+    case 'top-left':
+      return { ...base, top: '8px', left: '8px' };
+    case 'top-right':
+      return { ...base, top: '8px', right: '8px' };
+    case 'middle-left':
+      return { ...base, top: '50%', left: '8px', transform: 'translateY(-50%)' };
+    case 'middle-right':
+      return { ...base, top: '50%', right: '8px', transform: 'translateY(-50%)' };
+    case 'bottom-left':
+      return { ...base, bottom: '8px', left: '8px' };
+    case 'bottom-right':
+      return { ...base, bottom: '8px', right: '8px' };
+    case 'center':
+      return { ...base, top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
+    default:
+      return base;
+  }
+};
+
 const Die = ({ value }) => {
-  // Array of dot positions for each die value
-  const dotPositions = {
-    1: ['center'],
-    2: ['top-right', 'bottom-left'],
-    3: ['top-right', 'center', 'bottom-left'],
-    4: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
-    5: ['top-left', 'top-right', 'center', 'bottom-left', 'bottom-right'],
-    6: ['top-left', 'top-right', 'middle-left', 'middle-right', 'bottom-left', 'bottom-right']
-  };
-
-  const getDotPosition = (position) => {
-    const positions = {
-      'top-left': 'top-2 left-2',
-      'top-right': 'top-2 right-2',
-      'middle-left': 'top-1/2 left-2 -translate-y-1/2',
-      'middle-right': 'top-1/2 right-2 -translate-y-1/2',
-      'bottom-left': 'bottom-2 left-2',
-      'bottom-right': 'bottom-2 right-2',
-      'center': 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
-    };
-    return positions[position];
-  };
-
   return (
-    <div className="w-20 h-20 bg-white rounded-lg shadow-md relative">
+    <div
+      style={{
+        width: '80px',
+        height: '80px',
+        backgroundColor: '#fff',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        position: 'relative',
+        border: '1px solid #e5e7eb'
+      }}
+    >
       {dotPositions[value].map((position, index) => (
-        <div
-          key={index}
-          className={`absolute w-3 h-3 bg-black rounded-full ${getDotPosition(position)}`}
-        />
+        <div key={index} style={getDotStyle(position)} />
       ))}
     </div>
   );
 };
 
-const DiceRoller = () => {
+export default function App() {
   const [numDice, setNumDice] = useState(6);
   const [diceValues, setDiceValues] = useState([]);
   const [error, setError] = useState('');
@@ -45,7 +67,7 @@ const DiceRoller = () => {
     const value = parseInt(e.target.value);
     setNumDice(value);
     setError('');
-    
+
     if (isNaN(value) || value < 1 || value > 12) {
       setError('Please enter a number between 1 and 12');
     }
@@ -60,45 +82,63 @@ const DiceRoller = () => {
     const newValues = Array(numDice)
       .fill(0)
       .map(() => Math.floor(Math.random() * 6) + 1);
-    
+
     setDiceValues(newValues);
     setError('');
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <div className="flex gap-4 mb-6">
-        <div className="flex items-center gap-2">
-          <label className="font-medium">Number of Dice:</label>
+    <div style={{ maxWidth: '672px', margin: '0 auto', padding: '24px', fontFamily: 'sans-serif' }}>
+      <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <label style={{ fontWeight: 500 }}>Number of Dice:</label>
           <input
             type="number"
             min="1"
             max="12"
             value={numDice}
             onChange={handleInputChange}
-            className="w-20 px-2 py-1 border rounded"
+            style={{
+              width: '80px',
+              padding: '4px 8px',
+              border: '1px solid #d1d5db',
+              borderRadius: '4px',
+              outline: 'none'
+            }}
           />
         </div>
         <button
           onClick={rollDice}
-          className="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
           disabled={!!error}
+          style={{
+            padding: '4px 16px',
+            backgroundColor: error ? '#93c5fd' : '#3b82f6',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: error ? 'not-allowed' : 'pointer',
+            opacity: error ? 0.5 : 1
+          }}
         >
           Roll
         </button>
       </div>
 
       {error && (
-        <div className="text-red-500 mb-4">{error}</div>
+        <div style={{ color: '#ef4444', marginBottom: '16px' }}>{error}</div>
       )}
 
-      <div className="grid grid-cols-3 gap-4">
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '16px'
+        }}
+      >
         {diceValues.map((value, index) => (
           <Die key={index} value={value} />
         ))}
       </div>
     </div>
   );
-};
-
-export default DiceRoller;
+}

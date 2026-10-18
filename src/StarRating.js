@@ -1,55 +1,51 @@
 import React, { useState } from "react";
 
-const StarRating = ({ totalStars = 5 }) => {
-  const [hoveredStar, setHoveredStar] = useState(0);
-  const [selectedStar, setSelectedStar] = useState(0);
-
-  const handleMouseEnter = (index) => {
-    setHoveredStar(index);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredStar(0);
-  };
-
-  const handleClick = (index) => {
-    setSelectedStar(index);
-  };
+function StarRating() {
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
 
   return (
-    <div className="flex items-center gap-2">
-      {[...Array(totalStars)].map((_, i) => {
-        const index = i + 1;
-        const isFilled = hoveredStar >= index || selectedStar >= index;
+    <div style={{ textAlign: "center", padding: "20px" }}>
+      <h1>Star Rating</h1>
+      <h3>by NamasteDev</h3>
 
-        return (
+      <div>
+        {[1, 2, 3, 4, 5].map((star) => (
           <span
-            key={index}
-            className={`text-4xl cursor-pointer transition-colors ${
-              isFilled ? "text-yellow-400" : "text-gray-300"
-            }`}
-            onMouseEnter={() => handleMouseEnter(index)}
-            onMouseLeave={handleMouseLeave}
-            onClick={() => handleClick(index)}
+            key={star}
+            onClick={() => setRating(star)}
+            onMouseEnter={() => setHover(star)}
+            onMouseLeave={() => setHover(0)}
+            style={{
+              fontSize: "30px",
+              cursor: "pointer",
+              color: star <= (hover || rating) ? "gold" : "gray",
+              transition: "color 0.2s",
+            }}
           >
             ★
           </span>
-        );
-      })}
-      {selectedStar > 0 && (
-        <span className="ml-4 text-lg text-blue-500">
-          You rated: {selectedStar} / {totalStars}
-        </span>
-      )}
-    </div>
-  );
-};
+        ))}
+      </div>
 
-export default function App() {
-  return (
-    <div className="flex flex-col items-center mt-5 min-h-screen bg-white">
-      <h1 className="text-2xl font-semibold mb-4">Star Rating Component</h1>
-      <StarRating totalStars={5} />
+      <p>Current Rating: {rating}</p>
+
+      <button
+        onClick={() => {
+          setRating(0);
+          setHover(0);
+        }}
+        style={{
+          marginTop: "10px",
+          padding: "8px 15px",
+          fontSize: "16px",
+          cursor: "pointer",
+        }}
+      >
+        Reset Rating
+      </button>
     </div>
   );
 }
+
+export default StarRating;

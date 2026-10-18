@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./GridLight.css";
 
 function Cell({ filled, onClick, isDisabled, label }) {
   return (
@@ -7,14 +8,12 @@ function Cell({ filled, onClick, isDisabled, label }) {
       aria-label={label}
       disabled={isDisabled}
       onClick={onClick}
-      className={`border border-black h-0 pb-[100%] ${
-        filled ? "bg-green-500" : "bg-transparent"
-      }`}
+      className={`cell ${filled ? "filled" : ""}`}
     />
   );
 }
 
-export default function App() {
+export default function GridLight() {
   const [order, setOrder] = useState([]);
   const [isDeactivating, setIsDeactivating] = useState(false);
 
@@ -51,9 +50,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gray-100">
+    <div className="grid-container">
       <div
-        className={`grid max-w-[300px] w-full p-5 gap-5 border border-black grid-cols-${config[0].length}`}
+        className="grid"
+        style={{
+          gridTemplateColumns: `repeat(${config[0].length}, 1fr)`,
+        }}
       >
         {config.flat().map((value, index) =>
           value ? (
@@ -65,7 +67,7 @@ export default function App() {
               isDisabled={order.includes(index) || isDeactivating}
             />
           ) : (
-            <div key={index} className="invisible" />
+            <div key={index} className="cell-hidden" />
           )
         )}
       </div>

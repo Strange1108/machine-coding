@@ -1,42 +1,47 @@
-import React, { useState, useEffect } from "react";
-import "./TrafficLight.css";
+import { useEffect, useRef, useState } from "react";
 
-const TrafficLight = () => {
-  const [currentLight, setCurrentLight] = useState("red");
+const useThrottleFn = (fn, delay) => {
+  const lastCalled = useRef(0);
+
+  return (...args) => {
+    const now = Date.now();
+    if (now - lastCalled.current >= delay) {
+      lastCalled.current = now;
+      fn(...args);
+    }
+  };
+};
+
+function App() {
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  const handleResize = () => {
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  };
+
+  const throttledResize = useThrottleFn(handleResize, 1000);
 
   useEffect(() => {
-    let timer;
+    window.addEventListener("resize", throttledResize);
 
-    switch (currentLight) {
-      case "red":
-        timer = setTimeout(() => setCurrentLight("green"), 4000);
-        break;
-      case "yellow":
-        timer = setTimeout(() => setCurrentLight("red"), 500);
-        break;
-      case "green":
-        timer = setTimeout(() => setCurrentLight("yellow"), 3000);
-        break;
-      default:
-        setCurrentLight("red");
-    }
-
-    return () => clearTimeout(timer); // Cleanup timer
-  }, [currentLight]);
+    return () => {
+      window.removeEventListener("resize", throttledResize);
+    };
+  }, [throttledResize]);
 
   return (
-    <div className="traffic-container">
-      <div className="traffic-housing">
-        <div className={`light red ${currentLight === "red" ? "active" : ""}`} />
-        <div className={`light yellow ${currentLight === "yellow" ? "active" : ""}`} />
-        <div className={`light green ${currentLight === "green" ? "active" : ""}`} />
-      </div>
-
-      <h1 className="traffic-status">
-        Current Light: <span>{currentLight}</span>
+    <div>
+      <h1>
+        Window Size: {windowSize.width} x {windowSize.height}
       </h1>
     </div>
   );
-};
+}
 
-export default TrafficLight;
+export default App;
